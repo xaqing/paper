@@ -1,0 +1,4 @@
+# 在项目根目录执行（c:\Users\Administrator\Desktop\paper）
+git add .
+git commit -m "完成CI/CD全流程配置"
+git push origin main
