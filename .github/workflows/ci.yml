@@ -35,7 +35,9 @@ jobs:
           verbose: true
           working-directory: ${{ github.workspace }}
           branch: ${{ github.ref_name }}
-          slug: xaqing/paper
+          slug: xaqing/paper  # 需要与Codecov仓库匹配
+          codecov_version: v2.1.0
+          name: paper-validator-${{ matrix.python-version }}  # 添加唯一标识
           # 添加版本参数
           codecov_version: v2.1.0
 
