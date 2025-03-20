@@ -33,22 +33,29 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           verbose: true
-          working-directory: ${{ github.workspace }}
-          fail_ci_if_error: true
+          branch: ${{ github.ref_name }}  # 显式指定分支
+          slug: xaqing/paper
+          env_vars: OS=Windows
+
+      - name: Token Validation
+        run: |
+          # 验证令牌有效性（模糊化显示）
+          Write-Output "TOKEN_PREFIX: $($env:CODECOV_TOKEN.Substring(0,6))..."
+          if ($env:CODECOV_TOKEN.Length -lt 40) {
+              Write-Output "::error::令牌长度异常（当前长度：$($env:CODECOV_TOKEN.Length)）"
+              Exit 1
+          }
+          # 验证令牌格式
+          if (-not $env:CODECOV_TOKEN.StartsWith('codecov-token=')) {
+              Write-Output "::error::令牌格式错误，请检查是否包含 codecov-token= 前缀"
+              Exit 1
+          }
 
       - name: Network Diagnostics
         run: |
-          # 增强路径验证
-          Write-Output "工作目录绝对路径: ${{ github.workspace }}"
-          Get-ChildItem ${{ github.workspace }} -Recurse -Filter coverage.xml
-          
-          # 使用原生PowerShell命令上传测试
-          try {
-              $response = Invoke-RestMethod -Uri "https://codecov.io/upload/v2" `
-                  -Method Post `
-                  -InFile coverage.xml `
-                  -Headers @{ "Authorization" = "Bearer $Env:CODECOV_TOKEN" }
-              Write-Output "上传响应: $($response | ConvertTo-Json)"
-          } catch {
-              Write-Output "::error::手动上传失败: $($_.Exception.Message)"
-          }
+          # 使用原生PowerShell上传测试
+          $header = @{ "Authorization" = "Bearer $Env:CODECOV_TOKEN" }
+          Invoke-RestMethod -Uri "https://codecov.io/upload/v2" `
+            -Method Post `
+            -InFile coverage.xml `
+            -Headers $header
