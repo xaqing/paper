@@ -32,14 +32,19 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
-          verbose: true  # 确保开启详细日志
-          working-directory: ${{ github.workspace }}  # 添加工作目录声明
+          verbose: true
+          working-directory: ${{ github.workspace }}
           branch: ${{ github.ref_name }}
           slug: xaqing/paper
-          env_vars: OS=Windows
+          # 添加版本参数
+          codecov_version: v2.1.0
 
       - name: Token Validation
         run: |
+          # 添加令牌哈希验证
+          $expectedPrefix = "codecov-token="
+          $tokenHash = (Get-FileHash -InputStream ([IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes($env:CODECOV_TOKEN)))).Hash
+          Write-Output "TOKEN_SHA256: $tokenHash"
           # 验证令牌有效性（模糊化显示）
           Write-Output "TOKEN_PREFIX: $($env:CODECOV_TOKEN.Substring(0,6))..."
           if ($env:CODECOV_TOKEN.Length -lt 40) {
