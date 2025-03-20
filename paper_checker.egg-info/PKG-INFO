@@ -1,0 +1,8 @@
+Metadata-Version: 2.2
+Name: paper_checker
+Version: 0.1
+Requires-Dist: python-docx
+Requires-Dist: langdetect
+Requires-Dist: httpx
+Requires-Dist: pyyaml
+Dynamic: requires-dist

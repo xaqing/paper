@@ -1,0 +1,7 @@
+setup.py
+paper_checker.egg-info/PKG-INFO
+paper_checker.egg-info/SOURCES.txt
+paper_checker.egg-info/dependency_links.txt
+paper_checker.egg-info/requires.txt
+paper_checker.egg-info/top_level.txt
+tests/test_ai_parser.py

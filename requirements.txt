@@ -1,0 +1,5 @@
+# 项目依赖
+python-docx>=0.8.11
+pytest>=7.4.0
+flake8>=6.0.0
+pytest-cov>=4.1.0

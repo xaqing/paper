@@ -1,0 +1,53 @@
+structure:
+  section_order:
+    - cover_zh
+    - cover_en
+    - declaration
+    - abstract_zh
+    - abstract_en
+    - toc
+    - introduction
+    - literature_review
+    - methodology
+    - results
+    - conclusion
+    - references
+    - appendix
+  
+  title_levels:
+    max_first_section_level: 1
+    global_max_level: 3
+
+format:
+  apa_reference_pattern: '\d+\.\s[A-Za-z].+\(\d{4}\)\.'
+  keyword_delimiters:
+    zh: '；'
+    en: ';'
+
+ai_integration:
+  deepseek_r1:
+    api_base: "https://api.deepseek.com/v1"  # 生产环境需替换实际地址
+    api_key_path: "./config/api_keys/deepseek.yaml"
+    enabled: true
+    modules:  # 指定接入模块
+      content_evaluation: true  # 论文内容深度分析
+      grammar_enhanced: false   # 备用语法检查
+      structure_suggestion: true
+    
+  local_llm:  # 预留本地模型接口
+    base_path: "./models/llm/"
+    quantization: 8bit
+
+# 新增模型调用规则
+model_routing:
+  grammar_check: 
+    - type: "local"
+      model: "language-tool"
+    - type: "ai"
+      model: "deepseek-r1"
+      condition: "confidence < 0.7"
+  
+  content_evaluation:
+    - type: "ai"
+      model: "deepseek-r1"
+      required: true
