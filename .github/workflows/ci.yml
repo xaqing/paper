@@ -20,17 +20,18 @@ jobs:
       - name: Run Tests with Coverage
         run: |
           python -m pytest tests/ --cov=src --cov-report=xml
-          # 显式指定报告路径
-          Copy-Item coverage.xml -Destination ${env:GITHUB_WORKSPACE}\coverage.xml
+          if (-not (Test-Path coverage.xml)) { Exit 1 }
 
+      # 修正缩进并重新启用上传步骤
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: success()  # 仅在测试成功时上传
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ${env:GITHUB_WORKSPACE}/coverage.xml  # 使用绝对路径
+          file: ./coverage.xml
           verbose: true
+          flags: windows,python
           slug: xaqing/paper
-          url: https://codecov.io  # 显式指定API地址
 
       - name: Network Diagnostics
         run: |
