@@ -32,8 +32,9 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
-          verbose: true
-          branch: ${{ github.ref_name }}  # 显式指定分支
+          verbose: true  # 确保开启详细日志
+          working-directory: ${{ github.workspace }}  # 添加工作目录声明
+          branch: ${{ github.ref_name }}
           slug: xaqing/paper
           env_vars: OS=Windows
 
