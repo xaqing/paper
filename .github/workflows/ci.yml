@@ -22,15 +22,19 @@ jobs:
           python -m pytest tests/ --cov=src --cov-report=xml
           # 增强路径验证
           Write-Output "当前工作目录：$(Get-Location)"
-          Get-ChildItem coverage.xml | % { Write-Output "文件大小：$($_.Length) bytes" }
-          
+          Get-ChildItem coverage.xml | % { 
+              Write-Output "文件路径：$($_.FullName)"
+              Write-Output "文件大小：$($_.Length) bytes" 
+          }
+
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           verbose: true
-          working-directory: ${{ github.workspace }}  # 显式指定工作目录
+          working-directory: ${{ github.workspace }}
+          fail_ci_if_error: true  # 添加失败阻断
 
       - name: Network Diagnostics
         run: |
