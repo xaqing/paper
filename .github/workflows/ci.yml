@@ -21,6 +21,18 @@ jobs:
         run: |
           python -m pytest tests/ --cov=src --cov-report=xml
           
+      # 添加调试步骤验证文件生成
+      - name: Debug coverage file
+        run: |
+          Get-ChildItem coverage.xml
+          Get-Content coverage.xml | Select-Object -First 15
+          
+      # 修复缩进问题并增强调试
+      - name: Debug file structure
+        run: |
+          Write-Output "当前工作目录：$pwd"
+          Get-ChildItem -Recurse
+          
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
