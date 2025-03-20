@@ -34,8 +34,15 @@ jobs:
           file: ./coverage.xml
           verbose: true
           working-directory: ${{ github.workspace }}
-          fail_ci_if_error: true  # 添加失败阻断
+          fail_ci_if_error: true
 
       - name: Network Diagnostics
         run: |
-          curl -sSL https://codecov.io/bash | tee codecov_upload.log
+          # 添加环境变量验证
+          Write-Output "CODECOV_TOKEN exists: $env:CODECOV_TOKEN"
+          
+          # 增强curl调试命令
+          curl.exe -v -X POST `
+            --data-binary (Get-Content coverage.xml -Raw) `
+            -H "Authorization: Bearer $env:CODECOV_TOKEN" `
+            https://codecov.io/upload/v2
