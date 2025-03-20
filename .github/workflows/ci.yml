@@ -20,21 +20,19 @@ jobs:
       - name: Run Tests with Coverage
         run: |
           python -m pytest tests/ --cov=src --cov-report=xml
-          
-      # 添加调试步骤验证文件生成
-      - name: Debug coverage file
-        run: |
-          Get-ChildItem coverage.xml
-          Get-Content coverage.xml | Select-Object -First 15
-          
-      # 修复缩进问题并增强调试
-      - name: Debug file structure
-        run: |
-          Write-Output "当前工作目录：$pwd"
-          Get-ChildItem -Recurse
-          
+          # 显式指定报告路径
+          Copy-Item coverage.xml -Destination ${env:GITHUB_WORKSPACE}\coverage.xml
+
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+          file: ${env:GITHUB_WORKSPACE}/coverage.xml  # 使用绝对路径
+          verbose: true
+          slug: xaqing/paper
+          url: https://codecov.io  # 显式指定API地址
+
+      - name: Network Diagnostics
+        run: |
+          curl -v https://codecov.io/health
+          ping codecov.io -n 3
