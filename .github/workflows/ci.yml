@@ -1,4 +1,4 @@
-name: Paper Validator CI
+﻿name: Paper Validator CI
 on: [push, pull_request]
 
 jobs:
@@ -52,38 +52,4 @@ jobs:
               Write-Output "::error::令牌长度异常（当前长度：$($env:CODECOV_TOKEN.Length)）"
               Exit 1
           }
-
-// 删除以下段落 ▼▼▼
-      - name: Network Diagnostics
-        run: |
-          $header = @{
-              "Authorization" = "$Env:CODECOV_TOKEN"  # 使用全大写环境变量名
-              "Content-Type"  = "text/xml"
-          }
-          
-          # 增强的令牌调试块
-          Write-Output "::group::请求头验证"
-          $header.GetEnumerator() | % { 
-              Write-Output "$($_.Key): $($_.Value.Substring(0,[math]::Min(15,$_.Value.Length)))..." 
-          }
-          Write-Output "::endgroup::"
-
-          try {
-              $response = Invoke-WebRequest -Uri "https://codecov.io/upload/v2" `
-                  -Method Post `
-                  -InFile (Convert-Path coverage.xml) `
-                  -Headers $header `
-                  -UserAgent "github-actions/1.0" `
-                  -TimeoutSec 30 `
-                  -AllowUnencryptedTransfer  # 处理可能的SSL问题
-
-              Write-Output "::group::响应详情"
-              Write-Output "状态码：$($response.StatusCode)"
-              Write-Output "内容：$($response.Content)"
-              Write-Output "::endgroup::"
-          } catch {
-              Write-Output "::error::请求异常类型：$($_.Exception.GetType().FullName)"
-              Write-Output "::error::状态码：$($_.Exception.Response.StatusCode)"
-              Write-Output "::error::响应内容：$($_.ErrorDetails.Message)"
-              Exit 1
-          }
+# 完全删除以下 Network Diagnostics 步骤 ▼▼▼
