@@ -26,13 +26,12 @@ format:
 
 ai_integration:
   deepseek_r1:
-    api_base: "https://api.deepseek.com/v1"  # 生产环境需替换实际地址
-    api_key_path: "./config/api_keys/deepseek.yaml"
+    api_base: "实际生产环境API地址"  # 必须替换真实地址
+    api_key_path: "./config/api_keys/prod.yaml"  # 创建密钥文件
     enabled: true
-    modules:  # 指定接入模块
-      content_evaluation: true  # 论文内容深度分析
-      grammar_enhanced: false   # 备用语法检查
-      structure_suggestion: true
+    modules:  
+      content_evaluation: true
+      structure_suggestion: true  # 启用结构建议
     
   local_llm:  # 预留本地模型接口
     base_path: "./models/llm/"

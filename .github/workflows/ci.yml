@@ -26,20 +26,21 @@ jobs:
       # 新增论文深度校验 ▼▼▼
       - name: Academic Paper Validation
         run: |
-          python -m src.validator.cli validate \
-            --input ./paper/main.docx \
-            --config ./config/validation_rules.yaml \
-            --fail-on error
+          # 安装学术校验依赖（补充缺失的依赖安装）
+          pip install -r requirements-validator.txt
           
-          # 生成批注文档
-          python -m src.annotator generate \
-            --style university \
-            --output ./artifacts/annotated.docx
+          # 强化校验命令参数（修复路径问题）
+          python -m src.validator.cli validate \
+            --input ${{ github.workspace }}/paper/main.docx \
+            --config ${{ github.workspace }}/config/validation_rules.yaml \
+            --fail-on error \
+            --report-dir ${{ github.workspace }}/reports
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: validation-reports
+          path: ${{ github.workspace }}/reports/
           path: |
             ./artifacts/annotated.docx
             ./reports/validation_summary.html
