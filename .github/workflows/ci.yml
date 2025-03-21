@@ -20,6 +20,29 @@ jobs:
       - name: Run Tests with Coverage
         run: |
           python -m pytest tests/ --cov=src --cov-report=xml
+          # 新增目录结构验证
+          python -m src.validator structure check --config ./config/validation_rules.yaml
+
+      # 新增论文深度校验 ▼▼▼
+      - name: Academic Paper Validation
+        run: |
+          python -m src.validator.cli validate \
+            --input ./paper/main.docx \
+            --config ./config/validation_rules.yaml \
+            --fail-on error
+          
+          # 生成批注文档
+          python -m src.annotator generate \
+            --style university \
+            --output ./artifacts/annotated.docx
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-reports
+          path: |
+            ./artifacts/annotated.docx
+            ./reports/validation_summary.html
           Write-Output "当前工作目录：$(Get-Location)"
           Get-ChildItem coverage.xml | % { 
               Write-Output "文件路径：$($_.FullName)"
@@ -52,4 +75,29 @@ jobs:
               Write-Output "::error::令牌长度异常（当前长度：$($env:CODECOV_TOKEN.Length)）"
               Exit 1
           }
+- name: Academic Validation
+  run: |
+    # 安装验证工具链
+    pip install -r requirements-validator.txt
+    
+    # 执行核心校验
+    python -m validator.cli check \
+      --file ./paper/main.docx \
+      --config ./config/validation_rules.yaml \
+      --report-format json
+    
+    # 失败时中断流程
+    if Test-Path validation_errors.json -And (Get-Content validation_errors.json | ConvertFrom-Json).errors.Count -gt 0 {
+      Write-Output "::error:: 发现${error_count}个严重错误"
+      Exit 1
+    }
+# 转换编码并验证语法（带错误处理）
+iconv -f GBK -t UTF-8 .github/workflows/ci.yml -o ci_temp.yml
+if ($?) {
+    yamllint ci_temp.yml
+    Remove-Item ci_temp.yml -ErrorAction SilentlyContinue
+} else {
+    Write-Output "::error:: 文件编码转换失败"
+    Exit 1
+}
 # 完全删除以下 Network Diagnostics 步骤 ▼▼▼

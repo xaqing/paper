@@ -40,6 +40,21 @@ ai_integration:
 
 # 新增模型调用规则
 model_routing:
+  # 新增标题校验规则 ▼▼▼
+  title_validation:
+    - type: "ai"
+      model: "deepseek-r1"
+      conditions:
+        - trigger: "title_lines > 2"
+          prompt: "评估多行标题的合理性，需符合《本科毕业论文格式规范》第3.2节要求"
+  
+  # 强化签名验证 ▼▼▼  
+  signature_check:
+    - type: "regex"
+      pattern: "承诺人（签名）：\\s*[\\u4e00-\\u9fa5]{2,4}\\s+\\d{4}-\\d{2}-\\d{2}"
+    - type: "ai"
+      model: "deepseek-r1"
+      description: "验证电子签名包含手写体扫描件或合规数字证书"
   grammar_check: 
     - type: "local"
       model: "language-tool"
@@ -51,3 +66,15 @@ model_routing:
     - type: "ai"
       model: "deepseek-r1"
       required: true
+
+# 中文标题规范
+chinese_title:
+  max_lines: 3
+  required_prefix: "题目："
+  
+# 承诺书验证规则
+commitment:
+  required_elements:
+    - electronic_signature
+    - chinese_title_in_quotes
+  date_format: "YYYY-MM-DD"
